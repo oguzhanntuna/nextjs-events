@@ -1,4 +1,4 @@
-import { getAllEvents, getEventById } from "../../helpers/api-util";
+import { getFeaturedEvents, getEventById } from "../../helpers/api-util";
 import EventSummary from "../../components/event-detail/event-summary";
 import EventLogistics from "../../components/event-detail/event-logistics";
 import EventContent from "../../components/event-detail/event-content";
@@ -9,9 +9,9 @@ const EventDetailPage = (props) => {
 
   if (!event) {
     return (
-      <ErrorAlert>
-        <p>No event found!</p>
-      </ErrorAlert>
+      <div className="center">
+        <p>Loading...</p>
+      </div>
     );
   }
 
@@ -29,23 +29,34 @@ const EventDetailPage = (props) => {
       </EventContent>
     </>
   );
-}
+};
 
 export default EventDetailPage;
 
 export const getStaticProps = async ({ params: { eventId } }) => {
   const event = await getEventById(eventId);
 
-  return { props: { selectedEvent: event } };
+  return {
+    props: {
+      selectedEvent: event,
+    },
+    revalidate: 30
+  };
 };
 
 export const getStaticPaths = async () => {
-  const events = await getAllEvents();
+  // In order not to overkill, we only pre-generate featured events which are more likely to be visited.
+  const events = await getFeaturedEvents();
 
-  const paths = events.map(event => ({ params: { eventId: event.id } }));
+  const paths = events.map((event) => ({ params: { eventId: event.id } }));
 
-  return { 
+  return {
     paths,
-    fallback: false
+    // However we have more paths to specify than only the featured events. Therefore, fallback should be set to true to generate the other pages 
+    // that are not specifed in paths. Those will not have the content in page source though.
+    // fallback: true,
+
+    // Waits until the page is all ready to be displayed on the browser.
+    fallback: 'blocking',
   };
 };
