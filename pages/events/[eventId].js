@@ -1,3 +1,5 @@
+import Head from "next/head";
+
 import { getFeaturedEvents, getEventById } from "../../helpers/api-util";
 import EventSummary from "../../components/event-detail/event-summary";
 import EventLogistics from "../../components/event-detail/event-logistics";
@@ -16,6 +18,10 @@ const EventDetailPage = (props) => {
 
   return (
     <>
+      <Head>
+        <title>{event.title}</title>
+        <meta name="description" content={event.description} />
+      </Head>
       <EventSummary title={event.title} />
       <EventLogistics
         date={event.date}
@@ -37,7 +43,7 @@ export const getStaticProps = async ({ params: { eventId } }) => {
     props: {
       selectedEvent: event,
     },
-    revalidate: 30 // every 30 seconds
+    revalidate: 30, // every 30 seconds
   };
 };
 
@@ -49,12 +55,12 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    // However we have more paths to specify than only the featured events. Therefore, fallback should be set to true to generate the other pages 
+    // However we have more paths to specify than only the featured events. Therefore, fallback should be set to true to generate the other pages
     // that are not specifed in paths. Those will not have the content in page source though.
     // fallback: true,
 
     // Waits until the page is all ready to be displayed on the browser.
-    fallback: 'blocking',
+    fallback: "blocking",
   };
 };
 
