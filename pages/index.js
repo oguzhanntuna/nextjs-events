@@ -10,8 +10,6 @@ const HomePage = ({ featuredEvents }) => {
   );
 }
 
-export default HomePage;
-
 export const getStaticProps = async () => {
   const featuredEvents = await getFeaturedEvents();
 
@@ -22,3 +20,5 @@ export const getStaticProps = async () => {
     revalidate: 1800 // every half hour
   };
 };
+
+export default HomePage;

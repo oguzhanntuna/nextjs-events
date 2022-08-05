@@ -7,7 +7,6 @@ import EventsSearch from "../../components/events/events-search";
 const AllEventsPage = ({ events }) => {
   const router = useRouter();
   
-
   const findEventsHandler = (year, month) => {
     const fullPath = `/events/${year}/${month}`;
 
@@ -22,9 +21,6 @@ const AllEventsPage = ({ events }) => {
   );
 }
 
-export default AllEventsPage;
-
-
 export const getStaticProps = async () => {
   const events = await getAllEvents();
 
@@ -35,3 +31,5 @@ export const getStaticProps = async () => {
     revalidate: 60 // every 60 seconds
   }
 };
+
+export default AllEventsPage;

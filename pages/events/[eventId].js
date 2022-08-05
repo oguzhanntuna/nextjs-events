@@ -2,7 +2,6 @@ import { getFeaturedEvents, getEventById } from "../../helpers/api-util";
 import EventSummary from "../../components/event-detail/event-summary";
 import EventLogistics from "../../components/event-detail/event-logistics";
 import EventContent from "../../components/event-detail/event-content";
-import ErrorAlert from "../../components/ui/error-alert";
 
 const EventDetailPage = (props) => {
   const event = props.selectedEvent;
@@ -31,8 +30,6 @@ const EventDetailPage = (props) => {
   );
 };
 
-export default EventDetailPage;
-
 export const getStaticProps = async ({ params: { eventId } }) => {
   const event = await getEventById(eventId);
 
@@ -60,3 +57,5 @@ export const getStaticPaths = async () => {
     fallback: 'blocking',
   };
 };
+
+export default EventDetailPage;
