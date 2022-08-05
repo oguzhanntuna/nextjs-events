@@ -32,6 +32,6 @@ export const getStaticProps = async () => {
     props: {
       events
     },
-    validate: 60 // every 60 seconds
+    revalidate: 60 // every 60 seconds
   }
 };
