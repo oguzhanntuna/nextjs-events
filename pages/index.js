@@ -1,7 +1,7 @@
 import { getFeaturedEvents } from "../helpers/api-util";
 import EventList from "../components/events/event-list";
 
-function HomePage({ featuredEvents }) {
+const HomePage = ({ featuredEvents }) => {
 
   return (
     <>
