@@ -29,15 +29,17 @@ export const getEventById = async (id) => {
 };
 
 export const getFilteredEvents = async (dateFilter) => {
-    const { year, month } = dateFilter;
+  const { year, month } = dateFilter;
 
-    const allEvents = await getAllEvents();
-  
-    let filteredEvents = allEvents.filter((event) => {
-      const eventDate = new Date(event.date);
-      
-      return eventDate.getFullYear() === year && eventDate.getMonth() === month - 1;
-    });
-  
-    return filteredEvents;
-  }
+  const allEvents = await getAllEvents();
+
+  const filteredEvents = allEvents.filter((event) => {
+    const eventDate = new Date(event.date);
+
+    return (
+      eventDate.getFullYear() === year && eventDate.getMonth() === month - 1
+    );
+  });
+
+  return filteredEvents;
+};

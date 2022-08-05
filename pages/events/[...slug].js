@@ -1,31 +1,51 @@
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 
-import { getFilteredEvents } from "../../helpers/api-util";
+import { getAllEvents, getFilteredEvents } from "../../helpers/api-util";
 import EventList from "../../components/events/event-list";
 import ResultsTitle from "../../components/events/results-title";
 import Button from "../../components/ui/button";
 import ErrorAlert from "../../components/ui/error-alert";
 
-const FilteredEventsPage = ({
-  filteredEvents,
-  date: { year, month },
-  hasError,
-}) => {
-  // const router = useRouter();
+// Filtered list of events are not that important for search engines, that is not the main thing
+// search engines should be crawling. For them/ the featured events, all events and the events
+// details are more relevant.
+const FilteredEventsPage = () => {
+  const [allEvents, setAllEvents] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  // const filterData = router.query.slug;
+  const filterData = router.query.slug;
 
-  // if (!filterData) {
-  //   return <p className="center">Loading...</p>;
-  // }
+  useEffect(() => {
+    const fetchAllEvent = async () => {
+      setIsLoading(true);
 
-  // const filteredYear = filterData[0];
-  // const filteredMonth = filterData[1];
+      const events = await getAllEvents();
 
-  // const numYear = +filteredYear;
-  // const numMonth = +filteredMonth;
+      setAllEvents(events);
+      setIsLoading(false);
+    };
 
-  if (hasError) {
+    fetchAllEvent();
+  }, []);
+
+  if (isLoading || !allEvents) {
+    return <p className="center">Loading...</p>;
+  }
+
+  const numYear = +filterData[0];
+  const numMonth = +filterData[1];
+  const date = new Date(numYear, numMonth - 1);
+
+  if (
+    isNaN(numYear) ||
+    isNaN(numMonth) ||
+    numYear > 2030 ||
+    numYear < 2021 ||
+    numMonth < 1 ||
+    numMonth > 12
+  ) {
     return (
       <>
         <ErrorAlert>
@@ -37,6 +57,12 @@ const FilteredEventsPage = ({
       </>
     );
   }
+
+  const filteredEvents = allEvents.filter((event) => {
+    const eventDate = new Date(event.date);
+    
+    return eventDate.getFullYear() === numYear && eventDate.getMonth() === numMonth - 1;
+  });
 
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
@@ -51,60 +77,12 @@ const FilteredEventsPage = ({
     );
   }
 
-  const date = new Date(year, month - 1);
-
   return (
     <>
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
     </>
   );
-};
-
-export const getServerSideProps = async ({ params: { slug } }) => {
-  const filterData = slug;
-
-  const filteredYear = filterData[0];
-  const filteredMonth = filterData[1];
-
-  const numYear = +filteredYear;
-  const numMonth = +filteredMonth;
-
-  if (
-    isNaN(numYear) ||
-    isNaN(numMonth) ||
-    numYear > 2030 ||
-    numYear < 2021 ||
-    numMonth < 1 ||
-    numMonth > 12
-  ) {
-    return {
-      props: {
-        hasError: true,
-        filteredEvents: [],
-        date: {},
-      },
-      // notFound: true,
-      // redirect: {
-      //   destination : '/error'
-      // }
-    };
-  }
-
-  const filteredEvents = await getFilteredEvents({
-    year: numYear,
-    month: numMonth,
-  });
-
-  return {
-    props: {
-      filteredEvents,
-      date: {
-        year: numYear,
-        month: numMonth,
-      },
-    },
-  };
 };
 
 export default FilteredEventsPage;
