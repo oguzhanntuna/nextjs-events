@@ -40,7 +40,7 @@ export const getStaticProps = async ({ params: { eventId } }) => {
     props: {
       selectedEvent: event,
     },
-    revalidate: 30
+    revalidate: 30 // every 30 seconds
   };
 };
 
