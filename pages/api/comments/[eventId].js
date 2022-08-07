@@ -1,5 +1,11 @@
-const handler = (req, res) => {
+import { MongoClient } from "mongodb";
+
+const handler = async (req, res) => {
   const { eventId } = req.query;
+
+  const client = await MongoClient.connect(
+    "mongodb+srv://oguzhanntuna:Lincolnn97..@cluster0.0c8jg5d.mongodb.net/?retryWrites=true&w=majority"
+  );
 
   if (req.method === "POST") {
     const { commentData } = req.body;
@@ -16,32 +22,32 @@ const handler = (req, res) => {
     }
 
     const newComment = {
-      id: new Date().toISOString(),
-      ...commentData
+      ...commentData,
+      eventId,
     };
 
-    console.log(newComment);
+    const db = client.db("events");
+
+    const result = await db.collection("comments").insertOne(newComment);
+
+    newComment.id = result.insertedId;
+
     res.status(201).json({ message: "Comment added!", comment: newComment });
   }
 
   if (req.method === "GET") {
-    const responseBody = [
-      {
-        id: 1,
-        email: "oguzhana.tuna@gmail.com",
-        name: "Oguzhan Tuna",
-        text: "Tuna test",
-      },
-      {
-        id: 2,
-        email: "seda.akkaya@gmail.com",
-        name: "Seda Akkaya",
-        text: "Akkaya Test",
-      },
-    ];
+    const db = client.db("events");
 
-    res.status(200).json({ comments: responseBody });
+    const documents = await db
+      .collection("comments")
+      .find()
+      .sort({ _id: -1 })
+      .toArray();
+
+    res.status(200).json({ comments: documents });
   }
+
+  client.close();
 };
 
 export default handler;

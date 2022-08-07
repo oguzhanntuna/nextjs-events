@@ -14,9 +14,9 @@ const handler = async (req, res) => {
       "mongodb+srv://oguzhanntuna:Lincolnn97..@cluster0.0c8jg5d.mongodb.net/?retryWrites=true&w=majority"
     );
 
-    const db = client.db('newsletter');
+    const db = client.db('events');
 
-    await db.collection("emails").insertOne({ email: userEmail });
+    await db.collection("newsletter").insertOne({ email: userEmail });
 
     client.close();
 
