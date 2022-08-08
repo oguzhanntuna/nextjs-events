@@ -40,7 +40,7 @@ const handler = async (req, res) => {
 
     const documents = await db
       .collection("comments")
-      .find()
+      .find({ eventId })
       .sort({ _id: -1 })
       .toArray();
 
